@@ -728,18 +728,39 @@ unsigned long long generic_get_cpu_clockrate_proccpuinfo_fallback(int cpu)
  {
   unsigned long long in;
    char tmp[_HW_DETECT_MAX_OUTPUT];
-   if(!strcmp("0x70",vendor))//FT2000+
-   {
-         return 2200000000;
-   }
+//   if(!strcmp("0x70",vendor))//FT2000+
+//   {
+//         return 2200000000;
+//   }
+
+   // 先判断对应的文件在不在
  
    if (cpu == -1) cpu=get_cpu();
    if (cpu == -1) return 0;
 
    memset(tmp, 0, sizeof(tmp));
+   sprintf(path, "/sys/devices/system/cpu/cpu%i/cpufreq/", cpu);
+   if (access(path, F_OK) != 0) { // 如果你是FT2000+这种没有写频率文件夹的，需要胜dmicode命令
+       char tmp_cmd[] = "dmidecode -t processor | grep \"Max Speed:\"| head -n 1 |awk '{print $3}'";
+       char buffer[128];
+       FILE* pipe = popen(tmp_cmd, "r");            // open pipe and running the cmd
+       if (!pipe) {
+           return 0;
+       }
+
+       while(!feof(pipe)) {
+           if(fgets(buffer, 128, pipe)){             //将管道输出到result中
+               strcat(tmp,buffer);
+           }
+       }
+       pclose(pipe);                            //关闭管道
+       in = atoll(tmp);
+       in *= 1000000;
+       return in;
+   }
+
    scaling_governor(cpu, tmp,sizeof(tmp));
 
-   sprintf(path, "/sys/devices/system/cpu/cpu%i/cpufreq/", cpu);
 
    if ((!strcmp(tmp,"performance"))||(!strcmp(tmp,"powersave")))
    {

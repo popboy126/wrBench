@@ -64,39 +64,39 @@ void read_hw_register(){
 
 	/* Main ID Register */
 	__asm__(
-	"LDR r4, =0xfffffff0\n"	
-	"\tBIC %[revision], %[main], r4\n"
+	"LDR x4, =0xfffffff0\n"	
+	"\tBIC %[revision], %[main], x4\n"
 	: [revision]"=r"(cpuinfo->revision)
         : [main]"r"(cpu)
 	); 
 
 	__asm__(
-	"LDR r4, =0xffff000f\n"	
-	"\tBIC %[model], %[main], r4\n"
+	"LDR x4, =0xffff000f\n"	
+	"\tBIC %[model], %[main], x4\n"
 	"\tLSR %[model], #4\n"
 	: [model]"=r"(cpuinfo->model)
         : [main]"r"(cpu)
 	); 	
 	
 	__asm__(
-	"LDR r4, =0xfff0ffff\n"	
-	"\tBIC %[arch], %[main], r4\n"
+	"LDR x4, =0xfff0ffff\n"	
+	"\tBIC %[arch], %[main], x4\n"
 	"\tLSR %[arch], #16\n"
 	: [arch]"=r"(cpuinfo->architecture)
         : [main]"r"(cpu)
 	); 
 
 	__asm__(
-	"LDR r4, =0xff0fffff\n"	
-	"\tBIC %[variant], %[main], r4\n"
+	"LDR x4, =0xff0fffff\n"	
+	"\tBIC %[variant], %[main], x4\n"
 	"\tLSR %[variant], #20\n"
 	: [variant]"=r"(cpuinfo->variant)
         : [main]"r"(cpu)
 	);
 
 	__asm__(
-	"LDR r4, =0x00ffffff\n"	
-	"\tBIC %[vendor], %[main], r4\n"
+	"LDR x4, =0x00ffffff\n"	
+	"\tBIC %[vendor], %[main], x4\n"
 	"\tLSR %[vendor], #24\n"
 	: [vendor]"=r"(cpuinfo->vendor)
         : [main]"r"(cpu)
@@ -104,31 +104,31 @@ void read_hw_register(){
 
 	/* TLB Type Register */
 	__asm__(
-	"LDR r4, =0xfffffffe\n"	
-	"\tBIC %[unified], %[tlb], r4\n"
+	"LDR x4, =0xfffffffe\n"	
+	"\tBIC %[unified], %[tlb], x4\n"
 	: [unified]"=r"(cpuinfo->TLB_unified)
         : [tlb]"r"(tlb)
 	); 
 
 	__asm__(
-	"LDR r4, =0xfffffffd\n"	
-	"\tBIC %[tlbsize], %[tlb], r4\n"
+	"LDR x4, =0xfffffffd\n"	
+	"\tBIC %[tlbsize], %[tlb], x4\n"
 	"\tLSR %[tlbsize], #1\n"
 	: [tlbsize]"=r"(cpuinfo->TLB_size)
         : [tlb]"r"(tlb)
 	); 
 
 	__asm__(
-	"LDR r4, =0xffff00ff\n"	
-	"\tBIC %[DLsize], %[tlb], r4\n"
+	"LDR x4, =0xffff00ff\n"	
+	"\tBIC %[DLsize], %[tlb], x4\n"
 	"\tLSR %[DLsize], #8\n"
 	: [DLsize]"=r"(cpuinfo->TLB_DLsize)
         : [tlb]"r"(tlb)
 	); 
 
 	__asm__(
-	"LDR r4, =0xff00ffff\n"	
-	"\tBIC %[ILsize], %[tlb], r4\n"
+	"LDR x4, =0xff00ffff\n"	
+	"\tBIC %[ILsize], %[tlb], x4\n"
 	"\tLSR %[ILsize], #16\n"
 	: [ILsize]"=r"(cpuinfo->TLB_ILsize)
         : [tlb]"r"(tlb)
@@ -136,23 +136,23 @@ void read_hw_register(){
 
 	/* CCSIDR */
 	__asm__(
-	"LDR r4, =0xfffffff8\n"	
-	"\tBIC %[CLsize], %[ccsidr], r4\n"
+	"LDR x4, =0xfffffff8\n"	
+	"\tBIC %[CLsize], %[ccsidr], x4\n"
 	: [CLsize]"=r"(cpuinfo->DCacheline_size)
         : [ccsidr]"r"(ccsidr)
 	); 
 
 	__asm__(
-	"LDR r4, =0xffffe007\n"	
-	"\tBIC %[Cassoc], %[ccsidr], r4\n"
+	"LDR x4, =0xffffe007\n"	
+	"\tBIC %[Cassoc], %[ccsidr], x4\n"
 	"\tLSR %[Cassoc], #3\n"
 	: [Cassoc]"=r"(cpuinfo->DCache_assoc)
         : [ccsidr]"r"(ccsidr)
 	); 
 
 	__asm__(
-	"LDR r4, =0xf0001fff\n"	
-	"\tBIC %[Csize], %[ccsidr], r4\n"
+	"LDR x4, =0xf0001fff\n"	
+	"\tBIC %[Csize], %[ccsidr], x4\n"
 	"\tLSR %[Csize], #13\n"
 	: [Csize]"=r"(cpuinfo->DCache_size)
         : [ccsidr]"r"(ccsidr)
@@ -183,6 +183,9 @@ void get_architecture(char* arch, size_t len){
 	case 7:	//0x7
 		strncpy(arch,"ARMv6",len);
 		break;
+    case 8:	//0x8
+        strncpy(arch,"ARMv8",len);
+        break;
 	case 15:	//0xf Definied by CPUID scheme
 		strncpy(arch,"ARMv7",len);
 		break;
@@ -278,7 +281,7 @@ void get_cpu_family(char* family, size_t len){
 }
 
 unsigned long long get_cpu_clockrate(int check,int cpu){
-	return generic_get_cpu_clockrate(check,cpu);
+	return generic_get_cpu_clockrate(check,cpu, NULL);
 }
 
 int get_phys_address_length(){

@@ -91,7 +91,11 @@
  /**
   * try to estimate ISA using compiler macros
   */
- extern void get_architecture(char* arch);
+#if ((defined (__ARM__))||(defined (__ARM))||(defined (ARM))||(defined (__ARMv7__))||(defined (__ARMv7))||(defined (ARMv7)))
+extern void get_architecture(char* arch, size_t len);
+#else
+extern void get_architecture(char* arch);
+#endif
 
  /** 
   * tries to determine the physical package, a cpu belongs to
@@ -171,7 +175,11 @@
   * @param cpu the cpu that should be used, cpu affinity has to be set to the desired cpu before calling this function
   *            used to determine which cpu should be checked (e.g. relevant for finding the appropriate directory in sysfs)
   */
- extern unsigned long long get_cpu_clockrate(int check,int cpu,char *vendor);
+#if ((defined (__ARM__))||(defined (__ARM))||(defined (ARM))||(defined (__ARMv7__))||(defined (__ARMv7))||(defined (ARMv7)))
+    extern unsigned long long get_cpu_clockrate(int check,int cpu);
+#else
+    extern unsigned long long get_cpu_clockrate(int check,int cpu,char *vendor);
+#endif
 
  /**
   * returns a timestamp from cpu-internal counters (if available)

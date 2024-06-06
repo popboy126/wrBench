@@ -39,6 +39,14 @@ ARCH_SHORT_COUNT=$((ARCH_SHORT_COUNT - CPU_DATA_COUNT - 5))
 
 cat properties.h.template | sed 's!\(#define CPU_DATA_COUNT \)[0-9]*!\1'$CPU_DATA_COUNT'!' | sed 's!\(#define ARCH_SHORT_COUNT \)[0-9]*!\1'$ARCH_SHORT_COUNT'!' > properties.h
 
-gcc -o cpuinfo ${DEFINES} -Wall architecture.c properties.c x86.c generic.c -lm
+CPU_ARCH=$(uname -p)
+if [ "${CPU_ARCH}" = "x86_64" ]; then
+  gcc -o cpuinfo ${DEFINES} -Wall architecture.c properties.c x86.c generic.c -lm
+elif [ "${CPU_ARCH}" = "aarch64" ]; then
+#  DEFINES="${DEFINES} -DARM -DARMv8"
+  gcc -o cpuinfo ${DEFINES} -Wall architecture.c properties.c generic.c -lm
+else
+  gcc -o cpuinfo ${DEFINES} -Wall architecture.c properties.c x86.c generic.c -lm
+fi
 
 #gcc -o cpuinfo ${DEFINES} -Wall architecture.c properties.c arm.c generic.c -lm

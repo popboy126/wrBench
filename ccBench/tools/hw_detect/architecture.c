@@ -110,11 +110,11 @@ static void show_cpu_info(int i)
    if (res!=-1) printf("Stepping: %llu\n",res);
    else printf("Stepping: n/a\n");
    #endif
-   res=get_cpu_clockrate(1,i);
+   res=get_cpu_clockrate(1,i, NULL);
    if (res!=0) printf("  Clockrate:        %llu MHz\n",res/1000000);
    else
    {
-      res=get_cpu_clockrate(0,i);
+      res=get_cpu_clockrate(0,i, NULL);
       if (res!=0) printf("  Clockrate:        %llu MHz (Warning: estimated using unreliable source)\n",res/1000000);
       else printf("  Clockrate:        n/a\n");
    }
@@ -234,7 +234,7 @@ int main(int argc, char** argv)
   /* system summary */
   if ((argc==1)||(!strcmp(argv[1],"--all")))
   {
-     get_architecture(output,sizeof(output));printf("Architecture:   %s\n",output);
+     get_architecture(output);printf("Architecture:   %s\n",output);
      printf("Number of (logical) CPUs: %i\n",num_cpus());
      res=num_packages();
      if (res!=-1) printf(" - Number of packages (sockets):   %llu\n",res);
@@ -330,7 +330,7 @@ int main(int argc, char** argv)
 
   if(!strcmp(argv[1],"cpu_isa"))
   {
-     get_architecture(output,sizeof(output));
+     get_architecture(output);
      printf("%s\n",output);
      return 0;
   }
@@ -422,7 +422,7 @@ int main(int argc, char** argv)
 
   if(!strcmp(argv[1],"cpu_clockrate"))
   {
-     res=get_cpu_clockrate(1,cpu);
+     res=get_cpu_clockrate(1,cpu, NULL);
      if (res!=0) printf("%llu\n",res);
      else printf("%s\n",output);
      return 0;
@@ -430,7 +430,7 @@ int main(int argc, char** argv)
 
   if(!strcmp(argv[1],"cpu_clockrate_no_check"))
   {
-     res=get_cpu_clockrate(0,cpu);
+     res=get_cpu_clockrate(0,cpu, NULL);
      if (res!=0) printf("%llu\n",res);
      else printf("%s\n",output);
      return 0;
